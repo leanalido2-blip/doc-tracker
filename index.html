@@ -431,6 +431,47 @@
             <div class="receipt-footer">
                 <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
                 <button class="btn-close" onclick="closeReceipt()">✖ Close</button>
+                /* --- MOBILE RESPONSIVE TWEAKS --- */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .title {
+                font-size: 16px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .table-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .search-control input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 650px;
+            }
+
+            .pagination-container {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+        }
             </div>
         </div>
     </div>
