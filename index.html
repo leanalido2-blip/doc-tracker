@@ -268,7 +268,7 @@
         </div>
         <div class="control-group">
             <label for="searchInput">Search:</label>
-            <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search TRF, Barcode, Source...">
+            <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search...">
         </div>
     </div>
 
@@ -305,7 +305,7 @@
                 <div class="detail-value">: <span id="modalTrf">-</span></div>
             </div>
             
-            <!-- BARCODE ROW (Placed under TRF NO.) -->
+            <!-- BARCODE ROW ADDED HERE UNDER TRF NO. -->
             <div class="detail-row" id="barcodeRow" style="display: none;">
                 <div class="detail-label">🏷️ BARCODE</div>
                 <div class="detail-value">: <span id="modalBarcode">-</span></div>
@@ -334,7 +334,6 @@
 </div>
 
 <script>
-    // EDIT SPREADSHEET ID HERE IF NEEDED
     const SHEET_ID = '1Eu20MywqGj5ih3eCbpJOhTEaoTP2du3i8NPUwCCU';
     const JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
 
@@ -355,19 +354,20 @@
             window.sheetRecords = rows.map(r => {
                 const c = r.c || [];
                 
-                // Column G (c[6]) is Barcode
-                const barcode = c[6] ? (c[6].v || '').toString().trim() : '';
+                // Safe helper functions to prevent table crashes on empty cells
+                const getVal = (i) => (c[i] && c[i].v !== null && c[i].v !== undefined) ? c[i].v.toString().trim() : '';
+                const getFmt = (i) => (c[i] && (c[i].f || c[i].v)) ? (c[i].f || c[i].v).toString().trim() : 'N/A';
 
                 return {
-                    trfNo: c[0] ? (c[0].v || '').toString().trim() : 'N/A',
-                    dateSubmitted: c[1] ? (c[1].f || c[1].v || 'N/A') : 'N/A',
-                    source: c[2] ? (c[2].v || 'N/A') : 'N/A',
-                    documentName: c[3] ? (c[3].v || 'N/A') : 'N/A',
-                    destination: c[4] ? (c[4].v || 'N/A') : 'N/A',
-                    status: c[5] ? (c[5].v || 'N/A') : 'PENDING',
-                    barcode: barcode,
-                    rawRemarks: c[7] ? (c[7].v || '').toString().trim() : 'PENDING',
-                    actionDate: c[8] ? (c[8].f || c[8].v || '') : ''
+                    trfNo: getVal(0) || 'N/A',
+                    dateSubmitted: getFmt(1),
+                    source: getVal(2) || 'N/A',
+                    documentName: getVal(3) || 'N/A',
+                    destination: getVal(4) || 'N/A',
+                    status: getVal(5) || 'PENDING',
+                    barcode: getVal(6), // Reads Column G (Barcode) safely
+                    rawRemarks: getVal(7) || 'PENDING',
+                    actionDate: getFmt(8)
                 };
             });
 
@@ -435,7 +435,7 @@
         document.getElementById('modalDate').innerText = item.dateSubmitted;
         document.getElementById('modalRemarks').innerText = item.status;
 
-        // Display Barcode row under TRF NO only if barcode exists
+        // Shows barcode under TRF NO only if available in Column G
         const barcodeRow = document.getElementById('barcodeRow');
         const barcodeSpan = document.getElementById('modalBarcode');
 
@@ -453,7 +453,6 @@
         document.getElementById('receiptModal').style.display = 'none';
     }
 
-    // Initialize fetch on load
     fetchGsheetData();
 </script>
 
