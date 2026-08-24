@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESNCHS Document Tracking Portal</title>
+    <!-- html2canvas library for PNG export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
         
@@ -314,8 +316,8 @@
 
         .receipt-footer { padding: 14px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; }
         .btn-close { background: #64748b; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-print { background: #6B1111; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .btn-print:hover { background: #4a0b0b; }
+        .btn-png { background: #6B1111; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s; }
+        .btn-png:hover { background: #4a0b0b; }
     </style>
 </head>
 <body>
@@ -438,7 +440,7 @@
             </div>
 
             <div class="receipt-footer">
-                <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
+                <button class="btn-png" onclick="downloadReceiptPNG()">🖼️ Save as PNG</button>
                 <button class="btn-close" onclick="closeReceipt()">✖ Close</button>
             </div>
         </div>
@@ -729,6 +731,33 @@
 
         function closeReceipt() {
             document.getElementById('receiptModal').style.display = 'none';
+        }
+
+        /* --- DOWNLOAD RECEIPT AS PNG FUNCTION --- */
+        function downloadReceiptPNG() {
+            const receiptElement = document.querySelector('.receipt-card');
+            const trfNumber = document.getElementById('modalTRF').innerText.trim() || 'Receipt';
+            const footer = receiptElement.querySelector('.receipt-footer');
+
+            // Temporarily hide the footer so action buttons don't appear in the captured image
+            footer.style.display = 'none';
+
+            html2canvas(receiptElement, {
+                scale: 2, // High resolution crisp rendering
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                // Restore footer visibility
+                footer.style.display = 'flex';
+
+                // Trigger browser image download
+                const link = document.createElement('a');
+                link.download = `Receipt_${trfNumber}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                footer.style.display = 'flex';
+                console.error('Error generating PNG receipt:', err);
+            });
         }
 
         // Start loading data immediately
