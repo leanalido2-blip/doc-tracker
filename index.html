@@ -3,458 +3,739 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL - Document Tracker</title>
+    <title>ESNCHS Document Tracking Portal</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f4f6f9;
-            color: #333;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #800000;
-            padding-bottom: 15px;
-        }
-
-        .header img {
-            width: 65px;
-            height: 65px;
-        }
-
-        .header-text h1 {
-            font-size: 1.4rem;
-            color: #800000;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .header-text p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-        }
-
-        select, input[type="text"] {
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            outline: none;
-            font-size: 0.9rem;
-        }
-
-        input[type="text"] {
-            width: 250px;
-        }
-
-        input[type="text"]:focus, select:focus {
-            border-color: #800000;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.88rem;
-        }
-
-        th {
-            background-color: #5c0606;
-            color: #fff;
-            padding: 12px 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .status-tag {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .btn-view {
-            background-color: #5c0606;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: background 0.2s;
-        }
-
-        .btn-view:hover {
-            background-color: #800000;
-        }
-
-        /* Modal Layout */
-        .modal {
-            display: none;
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
+        
+        /* --- FULLSCREEN ESNCHS SPLASH PRELOADER --- */
+        #preloader {
             position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #6B1111; /* ESNCHS Deep Crimson */
+            border-top: 5px solid #d97706; /* ESNCHS Gold Accent */
+            border-bottom: 5px solid #d97706; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            box-sizing: border-box;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .logo-spinner-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .esnchs-logo-circle {
+            width: 90px;
+            height: 90px;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .esnchs-orbit-ring {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            border-radius: 50%;
+            border: 2px solid rgba(217, 119, 6, 0.2);
+            border-top: 3.5px solid #fbbf24;
+            border-right: 3.5px solid rgba(251, 191, 36, 0.6);
+            animation: esnchsOrbit 1.1s infinite linear;
+            z-index: 1;
+            box-sizing: border-box;
         }
 
-        .modal-content {
-            background: #fff;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            margin: 5% auto;
-        }
-
-        .receipt-header {
-            background-color: #5c0606;
-            color: white;
+        .splash-title {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
             text-align: center;
-            padding: 15px;
         }
 
-        .receipt-header h2 {
-            font-size: 0.85rem;
+        .splash-subtitle {
+            color: #fef08a;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            text-align: center;
             font-weight: 600;
-            letter-spacing: 0.5px;
         }
 
-        .receipt-header h3 {
-            font-size: 1.05rem;
-            margin-top: 4px;
-            font-weight: 700;
+        .loading-text {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            animation: pulseText 1.5s infinite ease-in-out;
         }
 
-        .receipt-header p {
-            font-size: 0.75rem;
-            margin-top: 4px;
-            opacity: 0.9;
+        @keyframes esnchsOrbit {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .receipt-body {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            font-size: 0.9rem;
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        .detail-row {
+        /* --- MAIN DASHBOARD VIEW --- */
+        .main-content { opacity: 0; transition: opacity 0.5s ease; padding: 24px; max-width: 1400px; margin: 0 auto; }
+        .main-content.loaded { opacity: 1; }
+
+        .header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .logo { width: 64px; height: 64px; min-width: 64px; min-height: 64px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid #fef08a; overflow: hidden; flex-shrink: 0; }
+        .logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .title { font-size: 22px; font-weight: 700; color: #6B1111; margin: 0; }
+        .subtitle { font-size: 14px; color: #64748b; margin: 2px 0 0 0; }
+
+        /* --- TOP CONTROLS (SEARCH & ENTRIES PER PAGE) --- */
+        .table-controls {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #475569;
         }
 
-        .detail-label {
-            font-weight: 600;
-            color: #444;
-            width: 45%;
+        .entries-control select {
+            padding: 5px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #1e293b;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
         }
 
-        .detail-value {
-            width: 55%;
-            color: #111;
-        }
-
-        .receipt-footer {
-            padding: 15px 20px;
-            background: #f9f9f9;
+        .search-control {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid #eee;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn-print {
-            background-color: #5c0606;
-            color: white;
-            border: none;
-            padding: 8px 16px;
+        .search-control input {
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
             border-radius: 4px;
+            font-size: 14px;
+            width: 220px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-control input:focus {
+            border-color: #007bff;
+        }
+
+        /* --- TABLE & TABLE CHANGE LOADING OVERLAY --- */
+        .table-container { 
+            position: relative; 
+            background: #fff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04); 
+            min-height: 200px;
+        }
+
+        .table-loader-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(2px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .table-loader-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .table-spinner {
+            width: 38px;
+            height: 38px;
+            border: 3.5px solid #e2e8f0;
+            border-top: 3.5px solid #6B1111;
+            border-radius: 50%;
+            animation: tableSpin 0.7s linear infinite;
+        }
+
+        @keyframes tableSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; table-layout: fixed; }
+        th { background-color: #6B1111; color: #ffffff; padding: 14px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+
+        th:nth-child(1), td:nth-child(1) { width: 10%; }
+        th:nth-child(2), td:nth-child(2) { width: 14%; }
+        th:nth-child(3), td:nth-child(3) { width: 22%; }
+        th:nth-child(4), td:nth-child(4) { 
+            width: 34%; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        th:nth-child(5), td:nth-child(5) { width: 12%; }
+        th:nth-child(6), td:nth-child(6) { width: 8%; }
+
+        .badge-pending { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .badge-returned { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .badge-released { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
+        
+        .btn-view { background: #6B1111; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
+        .btn-view:hover { background: #4a0b0b; }
+
+        /* --- BOTTOM PAGINATION BAR --- */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .page-btn {
+            padding: 8px 14px;
+            border: none;
+            border-right: 1px solid #e2e8f0;
+            background: #fff;
+            color: #007bff;
+            font-size: 14px;
             cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .page-btn:last-child {
+            border-right: none;
+        }
+
+        .page-btn:hover:not(:disabled):not(.active) {
+            background: #f1f5f9;
+        }
+
+        .page-btn.active {
+            background: #007bff;
+            color: #fff;
             font-weight: 600;
         }
 
-        .btn-close {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
+        .page-btn:disabled {
+            color: #94a3b8;
+            background: #f8fafc;
+            cursor: not-allowed;
         }
+
+        /* --- RECEIPT MODAL --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .receipt-card { background: #ffffff; width: 500px; max-width: 90vw; border-radius: 10px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25); overflow: hidden; border: 1px solid #cbd5e1; }
+        
+        .receipt-header { background: #6B1111; color: #ffffff; padding: 20px; text-align: center; border-bottom: 3px solid #d97706; }
+        .receipt-header .school-name { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #fef08a; margin-bottom: 6px; }
+        
+        .receipt-header .doc-name { 
+            font-size: 15px; 
+            font-weight: 800; 
+            color: #ffffff; 
+            text-transform: uppercase; 
+            margin-bottom: 6px; 
+            line-height: 1.35;
+            max-height: 75px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .receipt-header .receipt-tag { font-size: 11px; font-weight: 500; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; color: #ffffff; }
+
+        .receipt-body { padding: 20px 24px; text-align: left; background: #ffffff; max-height: 60vh; overflow-y: auto; }
+        .detail-row { display: flex; margin-bottom: 12px; font-size: 13px; color: #334155; line-height: 1.4; }
+        .detail-label { font-weight: 700; width: 160px; color: #1e293b; flex-shrink: 0; }
+        .detail-value { font-weight: 500; color: #0f172a; flex-grow: 1; }
+
+        .attachment-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 12px;
+            color: #334155;
+            margin-top: 4px;
+            line-height: 1.6;
+        }
+
+        .receipt-footer { padding: 14px 24px; background: #f8fafc; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; }
+        .btn-close { background: #64748b; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-print { background: #6B1111; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; }
+        .btn-print:hover { background: #4a0b0b; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <div class="header-text">
-            <h1>Eastern Samar National Comprehensive High School</h1>
-            <p>📋 Records & Document Status Tracking Portal</p>
+    <!-- PRELOADER -->
+    <div id="preloader">
+        <div class="logo-spinner-wrapper">
+            <div class="esnchs-logo-circle"><img src="logo.png" style="width:100%; height:100%; object-fit:cover; border-radius:50%;"></div>
+            <div class="esnchs-orbit-ring"></div>
         </div>
+        <div class="splash-title">EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL</div>
+        <div class="splash-subtitle">Records & Document Status Tracking Portal</div>
+        <div class="loading-text">LOADING •••</div>
     </div>
 
-    <div class="controls">
-        <div class="control-group">
-            <label for="pageSize">Show</label>
-            <select id="pageSize" onchange="changePageSize()">
-                <option value="15">15</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-            </select>
-            <span>documents per page</span>
-        </div>
-        <div class="control-group">
-            <label for="searchInput">Search:</label>
-            <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="Search...">
-        </div>
-    </div>
-
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>📋 TRF NO.</th>
-                    <th>📅 DATE</th>
-                    <th>🏢 DOCUMENT SOURCE</th>
-                    <th>📂 REPORT SUBMITTED</th>
-                    <th>STATUS</th>
-                    <th style="text-align: center;">ACTION</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- Data rendered dynamically -->
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- RECEIPT MODAL -->
-<div id="receiptModal" class="modal">
-    <div class="modal-content">
-        <div class="receipt-header">
-            <h2>🏛️ EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL</h2>
-            <h3 id="modalDocName">APPLICATION FOR MONETAZATION OF LEAVE</h3>
-            <p>DOCUMENT TRACKING RECEIPT</p>
-        </div>
-        <div class="receipt-body">
-            <div class="detail-row">
-                <div class="detail-label">📋 TRF NO.</div>
-                <div class="detail-value">: <span id="modalTrf">-</span></div>
+    <!-- MAIN DASHBOARD CONTENT -->
+    <div id="mainContent" class="main-content">
+        <div class="header">
+            <div class="logo">
+                <img src="logo.png" alt="ESNCHS Logo">
             </div>
+            <div>
+                <h1 class="title">EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL</h1>
+                <p class="subtitle">📜 Records & Document Status Tracking Portal</p>
+            </div>
+        </div>
+
+        <!-- TOP BAR: ENTRIES SELECTOR & SEARCH BAR -->
+        <div class="table-controls">
+            <div class="entries-control">
+                Show 
+                <select id="pageSizeSelect" onchange="changePageSize(this.value)">
+                    <option value="10">10</option>
+                    <option value="15" selected>15</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select> 
+                documents per page
+            </div>
+            <div class="search-control">
+                <label for="searchInput">Search:</label>
+                <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="">
+            </div>
+        </div>
+
+        <!-- TABLE & OVERLAY LOADER -->
+        <div class="table-container">
+            <div id="tableLoader" class="table-loader-overlay">
+                <div class="table-spinner"></div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>📋 TRF NO.</th>
+                        <th>📅 DATE</th>
+                        <th>🏢 DOCUMENT SOURCE</th>
+                        <th>📂 REPORT SUBMITTED</th>
+                        <th>🏷️ STATUS</th>
+                        <th style="text-align: center;">ACTION</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="6" style="text-align:center; color:#64748b; padding:20px;">Fetching records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- BOTTOM BAR: PAGINATION SUMMARY & CONTROLS -->
+        <div class="pagination-container">
+            <div id="paginationInfo" class="pagination-info">Showing 0 to 0 of 0 documents</div>
+            <div id="paginationControls" class="pagination-buttons"></div>
+        </div>
+    </div>
+
+    <!-- RECEIPT MODAL -->
+    <div id="receiptModal" class="modal-overlay">
+        <div class="receipt-card">
+            <div class="receipt-header">
+                <div class="school-name">🏫 EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL</div>
+                <div id="modalDocName" class="doc-name">-</div>
+                <div class="receipt-tag">Document Tracking Receipt</div>
+            </div>
+
+            <div class="receipt-body">
+                <div class="detail-row">
+                    <div class="detail-label">📋 TRF NO.</div>
+                    <div class="detail-value">: <span id="modalTRF">-</span></div>
+                </div>
+
+                <!-- BARCODE FIELD ADDED DIRECTLY UNDER TRF NO. -->
+                <div id="barcodeRow" class="detail-row" style="display: none;">
+                    <div class="detail-label">🏷️ BARCODE</div>
+                    <div class="detail-value">: <span id="modalBarcode">-</span></div>
+                </div>
+
+                <div class="detail-row">
+                    <div class="detail-label">🏢 DOCUMENT SOURCE</div>
+                    <div class="detail-value">: <span id="modalSource">-</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">📅 DATE SUBMITTED</div>
+                    <div class="detail-value">: <span id="modalDateSubmitted">-</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">🏷️ REMARKS</div>
+                    <div class="detail-value">: <span id="modalRemarks">-</span></div>
+                </div>
+
+                <div id="attachmentRow" class="detail-row" style="display: none; flex-direction: column;">
+                    <div class="detail-label" style="width: 100%; margin-bottom: 4px;">📎 ATTACHED DOCUMENTS:</div>
+                    <div id="modalAttachments" class="attachment-box"></div>
+                </div>
+
+                <div id="actionDateContainer" class="detail-row" style="display: none;">
+                    <div id="actionDateLabel" class="detail-label">📌 DATE RELEASED</div>
+                    <div class="detail-value">: <span id="modalActionDate">-</span></div>
+                </div>
+            </div>
+
+            <div class="receipt-footer">
+                <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
+                <button class="btn-close" onclick="closeReceipt()">✖ Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.sheetRecords = [];
+        let filteredRecords = [];
+        let currentPage = 1;
+        let pageSize = 15;
+        let dashboardRevealed = false;
+        let updateTimer = null;
+
+        function revealDashboard() {
+            if (dashboardRevealed) return;
+            dashboardRevealed = true;
+
+            const preloader = document.getElementById('preloader');
+            const mainContent = document.getElementById('mainContent');
+
+            if (preloader) {
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+                setTimeout(() => {
+                    preloader.style.display = 'none';
+                    if (mainContent) mainContent.classList.add('loaded');
+                }, 400);
+            }
+        }
+
+        function loadLiveSheetData() {
+            const script = document.createElement('script');
+            script.src = 'https://docs.google.com/spreadsheets/d/1Eu204mywqGj5ih3eCbpJOhTEaoaTP2du3i8hNPWUcCU/gviz/tq?tqx=responseHandler:handleGsheetData';
             
-            <!-- BARCODE ROW ADDED HERE UNDER TRF NO. -->
-            <div class="detail-row" id="barcodeRow" style="display: none;">
-                <div class="detail-label">🏷️ BARCODE</div>
-                <div class="detail-value">: <span id="modalBarcode">-</span></div>
-            </div>
+            script.onerror = function() {
+                console.error("Could not access Google Sheet.");
+                const tableBody = document.getElementById('tableBody');
+                if (tableBody) {
+                    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ef4444; padding:20px;"><b>Error:</b> Unable to load Google Sheet data. Please ensure sheet access is set to "Anyone with the link".</td></tr>';
+                }
+                revealDashboard();
+            };
 
-            <div class="detail-row">
-                <div class="detail-label">🏢 DOCUMENT SOURCE</div>
-                <div class="detail-value">: <span id="modalSource">-</span></div>
-            </div>
+            document.body.appendChild(script);
+        }
 
-            <div class="detail-row">
-                <div class="detail-label">📅 DATE SUBMITTED</div>
-                <div class="detail-value">: <span id="modalDate">-</span></div>
-            </div>
+        function handleGsheetData(json) {
+            try {
+                const rows = json.table.rows;
+                window.sheetRecords = [];
 
-            <div class="detail-row">
-                <div class="detail-label">🏷️ REMARKS</div>
-                <div class="detail-value">: <span id="modalRemarks">-</span></div>
-            </div>
-        </div>
-        <div class="receipt-footer">
-            <button class="btn-print" onclick="window.print()">🖨️ Print Receipt</button>
-            <button class="btn-close" onclick="closeReceipt()">✖ Close</button>
-        </div>
-    </div>
-</div>
+                rows.forEach((row) => {
+                    const c = row.c;
+                    if (!c) return;
 
-<script>
-    const SHEET_ID = '1Eu20MywqGj5ih3eCbpJOhTEaoTP2du3i8NPUwCCU';
-    const JSON_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+                    const trfNo = c[0] ? (c[0].v || '').toString().trim() : '';
+                    const docName = c[3] ? (c[3].v || '').toString().trim() : '';
+                    
+                    if (!trfNo && !docName) return;
 
-    window.sheetRecords = [];
-    let filteredRecords = [];
-    let currentPage = 1;
-    let pageSize = 15;
-    let updateTimer = null;
+                    // Safely extract values without breaking data array if optional columns are empty
+                    const getVal = (idx) => (c[idx] && c[idx].v !== null && c[idx].v !== undefined) ? c[idx].v.toString().trim() : '';
+                    const getFmt = (idx) => (c[idx] && (c[idx].f || c[idx].v)) ? (c[idx].f || c[idx].v).toString().trim() : '';
 
-    async function fetchGsheetData() {
-        try {
-            const res = await fetch(JSON_URL);
-            const text = await res.text();
-            const jsonStr = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/)[1];
-            const data = JSON.parse(jsonStr);
-            
-            const rows = data.table.rows;
-            window.sheetRecords = rows.map(r => {
-                const c = r.c || [];
-                
-                // Safe helper functions to prevent table crashes on empty cells
-                const getVal = (i) => (c[i] && c[i].v !== null && c[i].v !== undefined) ? c[i].v.toString().trim() : '';
-                const getFmt = (i) => (c[i] && (c[i].f || c[i].v)) ? (c[i].f || c[i].v).toString().trim() : 'N/A';
+                    const record = {
+                        trfNo: trfNo || 'N/A',
+                        dateSubmitted: c[1] ? (c[1].f || c[1].v || 'N/A') : 'N/A',
+                        source: c[2] ? (c[2].v || 'N/A') : 'N/A',
+                        documentName: docName || 'N/A',
+                        destination: c[4] ? (c[4].v || 'N/A') : 'N/A',
+                        barcode: getVal(6), // Column G: Barcode
+                        rawRemarks: c[7] ? (c[7].v || '').toString().trim() : (c[5] ? (c[5].v || '').toString().trim() : 'PENDING'),
+                        actionDate: c[8] ? getFmt(8) : getFmt(7)
+                    };
 
-                return {
-                    trfNo: getVal(0) || 'N/A',
-                    dateSubmitted: getFmt(1),
-                    source: getVal(2) || 'N/A',
-                    documentName: getVal(3) || 'N/A',
-                    destination: getVal(4) || 'N/A',
-                    status: getVal(5) || 'PENDING',
-                    barcode: getVal(6), // Reads Column G (Barcode) safely
-                    rawRemarks: getVal(7) || 'PENDING',
-                    actionDate: getFmt(8)
+                    record.status = record.rawRemarks !== '' ? record.rawRemarks.toUpperCase() : 'PENDING';
+                    window.sheetRecords.push(record);
+                });
+
+                filteredRecords = [...window.sheetRecords];
+                renderTableDisplay();
+
+            } catch (error) {
+                console.error("Error formatting Google Sheet data:", error);
+            } finally {
+                revealDashboard();
+            }
+        }
+
+        // --- PAGE CHANGE LOADING ANIMATION HELPER ---
+        function triggerTableUpdate(actionFn) {
+            const loader = document.getElementById('tableLoader');
+            if (loader) loader.classList.add('active');
+
+            setTimeout(() => {
+                actionFn();
+                setTimeout(() => {
+                    if (loader) loader.classList.remove('active');
+                }, 120);
+            }, 120);
+        }
+
+        function renderTableDisplay() {
+            const tableBody = document.getElementById('tableBody');
+            if (!tableBody) return;
+
+            const totalRecords = filteredRecords.length;
+            const totalPages = Math.ceil(totalRecords / pageSize) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalRecords);
+            const visibleRecords = filteredRecords.slice(startIndex, endIndex);
+
+            tableBody.innerHTML = '';
+
+            if (visibleRecords.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#64748b; padding:20px;">No matching documents found.</td></tr>';
+            } else {
+                visibleRecords.forEach((record) => {
+                    const originalIndex = window.sheetRecords.indexOf(record);
+                    let badgeClass = 'badge-pending';
+
+                    if (record.status.includes('RELEASE')) {
+                        badgeClass = 'badge-released';
+                    } else if (record.status.includes('RETURN')) {
+                        badgeClass = 'badge-returned';
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${record.trfNo}</b></td>
+                        <td>${record.dateSubmitted}</td>
+                        <td>${record.source}</td>
+                        <td title="${record.documentName}">${record.documentName}</td>
+                        <td><span class="${badgeClass}">${record.status}</span></td>
+                        <td style="text-align: center;">
+                            <button class="btn-view" onclick="openReceiptByIndex(${originalIndex})">VIEW</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }
+
+            // Update Pagination Text
+            const startDisplay = totalRecords > 0 ? startIndex + 1 : 0;
+            document.getElementById('paginationInfo').innerText = `Showing ${startDisplay} to ${endIndex} of ${totalRecords} documents`;
+
+            // Build Pagination Buttons
+            renderPaginationControls(totalPages);
+        }
+
+        function renderPaginationControls(totalPages) {
+            const controls = document.getElementById('paginationControls');
+            controls.innerHTML = '';
+
+            // Previous Button
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerText = 'Previous';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => {
+                triggerTableUpdate(() => {
+                    currentPage--;
+                    renderTableDisplay();
+                });
+            };
+            controls.appendChild(prevBtn);
+
+            // Page Number Buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pageBtn.innerText = i;
+                pageBtn.onclick = () => {
+                    if (currentPage !== i) {
+                        triggerTableUpdate(() => {
+                            currentPage = i;
+                            renderTableDisplay();
+                        });
+                    }
                 };
-            });
+                controls.appendChild(pageBtn);
+            }
 
-            filteredRecords = [...window.sheetRecords];
-            renderTableDisplay();
-        } catch (err) {
-            console.error('Failed to load Google Sheet data:', err);
+            // Next Button
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerText = 'Next';
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            nextBtn.onclick = () => {
+                triggerTableUpdate(() => {
+                    currentPage++;
+                    renderTableDisplay();
+                });
+            };
+            controls.appendChild(nextBtn);
         }
-    }
 
-    function renderTableDisplay() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
+        function handleSearch(query) {
+            clearTimeout(updateTimer);
+            updateTimer = setTimeout(() => {
+                triggerTableUpdate(() => {
+                    const q = query.toLowerCase().trim();
+                    filteredRecords = window.sheetRecords.filter(item => {
+                        return item.trfNo.toLowerCase().includes(q) ||
+                               (item.barcode && item.barcode.toLowerCase().includes(q)) ||
+                               item.source.toLowerCase().includes(q) ||
+                               item.documentName.toLowerCase().includes(q) ||
+                               item.dateSubmitted.toLowerCase().includes(q) ||
+                               item.status.toLowerCase().includes(q);
+                    });
+                    currentPage = 1;
+                    renderTableDisplay();
+                });
+            }, 100);
+        }
 
-        const startIndex = (currentPage - 1) * pageSize;
-        const pageItems = filteredRecords.slice(startIndex, startIndex + pageSize);
+        function changePageSize(val) {
+            triggerTableUpdate(() => {
+                pageSize = parseInt(val, 10);
+                currentPage = 1;
+                renderTableDisplay();
+            });
+        }
 
-        pageItems.forEach((item, index) => {
-            const originalIndex = startIndex + index;
-            const tr = document.createElement('tr');
+        function openReceiptByIndex(index) {
+            const item = window.sheetRecords[index];
+            if (!item) return;
+
+            let mainTitle = item.documentName;
+            let attachmentsHTML = "";
+
+            if (item.documentName.includes('•')) {
+                const parts = item.documentName.split('•');
+                mainTitle = parts[0].trim();
+                const bulletItems = parts.slice(1).map(p => '• ' + p.trim());
+                attachmentsHTML = bulletItems.join('<br>');
+            }
+
+            document.getElementById('modalTRF').innerText = item.trfNo;
             
-            tr.innerHTML = `
-                <td>${item.trfNo}</td>
-                <td>${item.dateSubmitted}</td>
-                <td>${item.source}</td>
-                <td>${item.documentName}</td>
-                <td><span class="status-tag">${item.status}</span></td>
-                <td style="text-align: center;">
-                    <button class="btn-view" onclick="openReceiptByIndex(${originalIndex})">VIEW</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
+            // DYNAMIC BARCODE DISPLAY DIRECTLY UNDER TRF NO.
+            const barcodeRow = document.getElementById('barcodeRow');
+            const modalBarcode = document.getElementById('modalBarcode');
+            if (item.barcode && item.barcode !== '' && item.barcode !== 'N/A') {
+                modalBarcode.innerText = item.barcode;
+                barcodeRow.style.display = 'flex';
+            } else {
+                barcodeRow.style.display = 'none';
+            }
 
-    function handleSearch(query) {
-        clearTimeout(updateTimer);
-        updateTimer = setTimeout(() => {
-            const q = query.toLowerCase().trim();
-            filteredRecords = window.sheetRecords.filter(item => {
-                return (item.barcode && item.barcode.toLowerCase().includes(q)) ||
-                       item.trfNo.toLowerCase().includes(q) ||
-                       item.source.toLowerCase().includes(q) ||
-                       item.documentName.toLowerCase().includes(q) ||
-                       item.status.toLowerCase().includes(q);
-            });
-            currentPage = 1;
-            renderTableDisplay();
-        }, 100);
-    }
+            document.getElementById('modalSource').innerText = item.source;
+            document.getElementById('modalDocName').innerText = mainTitle;
+            document.getElementById('modalDateSubmitted').innerText = item.dateSubmitted;
+            document.getElementById('modalRemarks').innerText = item.status;
 
-    function changePageSize() {
-        pageSize = parseInt(document.getElementById('pageSize').value);
-        currentPage = 1;
-        renderTableDisplay();
-    }
+            const attachmentRow = document.getElementById('attachmentRow');
+            const modalAttachments = document.getElementById('modalAttachments');
 
-    function openReceiptByIndex(index) {
-        const item = filteredRecords[index];
-        if (!item) return;
+            if (attachmentsHTML !== "") {
+                modalAttachments.innerHTML = attachmentsHTML;
+                attachmentRow.style.display = 'flex';
+            } else {
+                attachmentRow.style.display = 'none';
+            }
 
-        document.getElementById('modalDocName').innerText = item.documentName;
-        document.getElementById('modalTrf').innerText = item.trfNo;
-        document.getElementById('modalSource').innerText = item.source;
-        document.getElementById('modalDate').innerText = item.dateSubmitted;
-        document.getElementById('modalRemarks').innerText = item.status;
+            const actionDateContainer = document.getElementById('actionDateContainer');
+            const actionDateLabel = document.getElementById('actionDateLabel');
+            const modalActionDate = document.getElementById('modalActionDate');
 
-        // Shows barcode under TRF NO only if available in Column G
-        const barcodeRow = document.getElementById('barcodeRow');
-        const barcodeSpan = document.getElementById('modalBarcode');
+            if (item.status.includes('RETURN')) {
+                actionDateLabel.innerText = '📌 DATE RETURNED';
+                modalActionDate.innerText = item.actionDate || 'N/A';
+                actionDateContainer.style.display = 'flex';
+            } else if (item.status.includes('RELEASE')) {
+                actionDateLabel.innerText = '📌 DATE RELEASED';
+                modalActionDate.innerText = item.actionDate || 'N/A';
+                actionDateContainer.style.display = 'flex';
+            } else {
+                actionDateContainer.style.display = 'none';
+            }
 
-        if (item.barcode && item.barcode !== '' && item.barcode !== 'N/A') {
-            barcodeSpan.innerText = item.barcode;
-            barcodeRow.style.display = 'flex';
-        } else {
-            barcodeRow.style.display = 'none';
+            document.getElementById('receiptModal').style.display = 'flex';
         }
 
-        document.getElementById('receiptModal').style.display = 'flex';
-    }
+        function closeReceipt() {
+            document.getElementById('receiptModal').style.display = 'none';
+        }
 
-    function closeReceipt() {
-        document.getElementById('receiptModal').style.display = 'none';
-    }
+        // Start loading data immediately
+        loadLiveSheetData();
 
-    fetchGsheetData();
-</script>
-
+        // Guaranteed hard limit: Hide preloader after 2 seconds
+        setTimeout(revealDashboard, 2000);
+    </script>
 </body>
 </html>
