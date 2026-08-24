@@ -46,7 +46,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 44px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             z-index: 2;
             overflow: hidden;
@@ -283,6 +282,28 @@
         .receipt-card { background: #ffffff; width: 500px; max-width: 90vw; border-radius: 10px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25); overflow: hidden; border: 1px solid #cbd5e1; }
         
         .receipt-header { background: #6B1111; color: #ffffff; padding: 20px; text-align: center; border-bottom: 3px solid #d97706; }
+        
+        /* RECEIPT LOGO STYLING */
+        .receipt-logo-container {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 10px auto;
+            background: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            border: 2px solid #fef08a;
+            overflow: hidden;
+        }
+        .receipt-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
         .receipt-header .school-name { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #fef08a; margin-bottom: 6px; }
         
         .receipt-header .doc-name { 
@@ -398,7 +419,11 @@
     <div id="receiptModal" class="modal-overlay">
         <div class="receipt-card">
             <div class="receipt-header">
-                <div class="school-name">🏫 EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL</div>
+                <!-- LOGO ADDED TO RECEIPT HEADER -->
+                <div class="receipt-logo-container">
+                    <img src="logo.png" alt="ESNCHS Logo">
+                </div>
+                <div class="school-name">EASTERN SAMAR NATIONAL COMPREHENSIVE HIGH SCHOOL</div>
                 <div id="modalDocName" class="doc-name">-</div>
                 <div class="receipt-tag">Document Tracking Receipt</div>
             </div>
@@ -409,7 +434,7 @@
                     <div class="detail-value">: <span id="modalTRF">-</span></div>
                 </div>
 
-                <!-- BARCODE FIELD ADDED DIRECTLY UNDER TRF NO. -->
+                <!-- BARCODE FIELD -->
                 <div id="barcodeRow" class="detail-row" style="display: none;">
                     <div class="detail-label">🏷️ BARCODE</div>
                     <div class="detail-value">: <span id="modalBarcode">-</span></div>
@@ -501,7 +526,6 @@
                     
                     if (!trfNo && !docName) return;
 
-                    // Safely extract values without breaking data array if optional columns are empty
                     const getVal = (idx) => (c[idx] && c[idx].v !== null && c[idx].v !== undefined) ? c[idx].v.toString().trim() : '';
                     const getFmt = (idx) => (c[idx] && (c[idx].f || c[idx].v)) ? (c[idx].f || c[idx].v).toString().trim() : '';
 
@@ -511,7 +535,7 @@
                         source: c[2] ? (c[2].v || 'N/A') : 'N/A',
                         documentName: docName || 'N/A',
                         destination: c[4] ? (c[4].v || 'N/A') : 'N/A',
-                        barcode: getVal(6), // Column G: Barcode
+                        barcode: getVal(6),
                         rawRemarks: c[7] ? (c[7].v || '').toString().trim() : (c[5] ? (c[5].v || '').toString().trim() : 'PENDING'),
                         actionDate: c[8] ? getFmt(8) : getFmt(7)
                     };
@@ -530,7 +554,6 @@
             }
         }
 
-        // --- PAGE CHANGE LOADING ANIMATION HELPER ---
         function triggerTableUpdate(actionFn) {
             const loader = document.getElementById('tableLoader');
             if (loader) loader.classList.add('active');
@@ -587,11 +610,9 @@
                 });
             }
 
-            // Update Pagination Text
             const startDisplay = totalRecords > 0 ? startIndex + 1 : 0;
             document.getElementById('paginationInfo').innerText = `Showing ${startDisplay} to ${endIndex} of ${totalRecords} documents`;
 
-            // Build Pagination Buttons
             renderPaginationControls(totalPages);
         }
 
@@ -599,7 +620,6 @@
             const controls = document.getElementById('paginationControls');
             controls.innerHTML = '';
 
-            // Previous Button
             const prevBtn = document.createElement('button');
             prevBtn.className = 'page-btn';
             prevBtn.innerText = 'Previous';
@@ -612,7 +632,6 @@
             };
             controls.appendChild(prevBtn);
 
-            // Page Number Buttons
             for (let i = 1; i <= totalPages; i++) {
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
@@ -628,7 +647,6 @@
                 controls.appendChild(pageBtn);
             }
 
-            // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
             nextBtn.innerText = 'Next';
@@ -685,7 +703,6 @@
 
             document.getElementById('modalTRF').innerText = item.trfNo;
             
-            // DYNAMIC BARCODE DISPLAY DIRECTLY UNDER TRF NO.
             const barcodeRow = document.getElementById('barcodeRow');
             const modalBarcode = document.getElementById('modalBarcode');
             if (item.barcode && item.barcode !== '' && item.barcode !== 'N/A') {
@@ -739,17 +756,14 @@
             const trfNumber = document.getElementById('modalTRF').innerText.trim() || 'Receipt';
             const footer = receiptElement.querySelector('.receipt-footer');
 
-            // Temporarily hide the footer so action buttons don't appear in the captured image
             footer.style.display = 'none';
 
             html2canvas(receiptElement, {
-                scale: 2, // High resolution crisp rendering
+                scale: 2,
                 backgroundColor: '#ffffff'
             }).then(canvas => {
-                // Restore footer visibility
                 footer.style.display = 'flex';
 
-                // Trigger browser image download
                 const link = document.createElement('a');
                 link.download = `Receipt_${trfNumber}.png`;
                 link.href = canvas.toDataURL('image/png');
@@ -760,10 +774,7 @@
             });
         }
 
-        // Start loading data immediately
         loadLiveSheetData();
-
-        // Guaranteed hard limit: Hide preloader after 2 seconds
         setTimeout(revealDashboard, 2000);
     </script>
 </body>
